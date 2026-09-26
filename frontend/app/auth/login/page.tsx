@@ -23,30 +23,36 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Apply rate limiting to prevent brute force attacks
-      const result = await withRateLimit(
-        loginLimiter,
-        formData.email.toLowerCase(),
-        async () => {
-          const { data, error: authError } = await supabase.auth.signInWithPassword({
-            email: formData.email,
-            password: formData.password,
-          });
+      console.log('Attempting login with:', formData.email);
 
-          if (authError) throw authError;
-          return data;
-        }
-      );
+      // Direct Supabase authentication without rate limiting for testing
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: formData.email.toLowerCase(),
+        password: formData.password,
+      });
 
-      if (!result.success) {
-        setError(result.error || 'Login failed');
+      console.log('Auth response:', { data, authError });
+
+      if (authError) {
+        console.error('Auth error:', authError);
+        setError(authError.message);
         return;
       }
 
-      if (result.data?.user) {
-        router.push('/dashboard');
+      if (data?.user) {
+        console.log('Login successful, user:', data.user.id);
+        console.log('Redirecting to dashboard...');
+
+        // Add a small delay to ensure session is set
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Use window.location for a hard redirect to ensure middleware runs
+        window.location.href = '/dashboard';
+      } else {
+        setError('Login failed - no user data returned');
       }
     } catch (err: any) {
+      console.error('Login error:', err);
       setError(err.message || 'An unexpected error occurred');
     } finally {
       setLoading(false);

@@ -326,19 +326,23 @@
   }
 
   .badge-success {
-    @apply bg-success/10 text-success dark:bg-success/20;
+    background-color: hsl(var(--success-light));
+    color: hsl(var(--success));
   }
 
   .badge-warning {
-    @apply bg-warning/10 text-warning dark:bg-warning/20;
+    background-color: hsl(var(--warning-light));
+    color: hsl(var(--warning));
   }
 
   .badge-destructive {
-    @apply bg-destructive/10 text-destructive dark:bg-destructive/20;
+    background-color: hsl(var(--destructive-light));
+    color: hsl(var(--destructive));
   }
 
   .badge-info {
-    @apply bg-info/10 text-info dark:bg-info/20;
+    background-color: hsl(var(--info-light));
+    color: hsl(var(--info));
   }
 
   /* ===== ALERT/TOAST STYLES ===== */
@@ -352,19 +356,31 @@
   }
 
   .alert-success {
-    @apply border-success/20 bg-success/5 text-success dark:border-success/30 dark:bg-success/10;
+    background-color: hsl(var(--success-light));
+    border-color: hsl(var(--success));
+    color: hsl(var(--success));
+    @apply border;
   }
 
   .alert-warning {
-    @apply border-warning/20 bg-warning/5 text-warning dark:border-warning/30 dark:bg-warning/10;
+    background-color: hsl(var(--warning-light));
+    border-color: hsl(var(--warning));
+    color: hsl(var(--warning));
+    @apply border;
   }
 
   .alert-destructive {
-    @apply border-destructive/20 bg-destructive/5 text-destructive dark:border-destructive/30 dark:bg-destructive/10;
+    background-color: hsl(var(--destructive-light));
+    border-color: hsl(var(--destructive));
+    color: hsl(var(--destructive));
+    @apply border;
   }
 
   .alert-info {
-    @apply border-info/20 bg-info/5 text-info dark:border-info/30 dark:bg-info/10;
+    background-color: hsl(var(--info-light));
+    border-color: hsl(var(--info));
+    color: hsl(var(--info));
+    @apply border;
   }
 
   /* ===== DIALOG/MODAL STYLES ===== */

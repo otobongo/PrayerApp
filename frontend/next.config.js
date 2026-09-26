@@ -3,6 +3,18 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
 
+  // Image optimization - Allow Unsplash images
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+
   // Security Headers
   async headers() {
     return [

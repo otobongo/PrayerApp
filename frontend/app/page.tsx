@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 
@@ -104,7 +105,15 @@ export default function Home() {
             {/* Card 1 - Features */}
             <div className="card border-border hover:shadow-lg transition-all duration-200">
               <div className="space-y-4">
-                <div className="h-32 bg-gray-100 dark:bg-gray-900 rounded-lg"></div>
+                <div className="relative h-32 rounded-lg overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=600&h=300&fit=crop&q=80"
+                    alt="Daily Guided Prayers"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
                 <div>
                   <h3 className="font-semibold text-foreground mb-2">Daily Guided Prayers</h3>
                   <p className="text-sm text-muted-foreground mb-4">
@@ -123,7 +132,15 @@ export default function Home() {
             {/* Card 2 - Community */}
             <div className="card border-border hover:shadow-lg transition-all duration-200">
               <div className="space-y-4">
-                <div className="h-32 bg-gray-100 dark:bg-gray-900 rounded-lg"></div>
+                <div className="relative h-32 rounded-lg overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&h=300&fit=crop&q=80"
+                    alt="Join Prayer Groups"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
                 <div>
                   <h3 className="font-semibold text-foreground mb-2">Join Prayer Groups</h3>
                   <p className="text-sm text-muted-foreground mb-4">
@@ -142,7 +159,15 @@ export default function Home() {
             {/* Card 3 - Tracking */}
             <div className="card border-border hover:shadow-lg transition-all duration-200">
               <div className="space-y-4">
-                <div className="h-32 bg-gray-100 dark:bg-gray-900 rounded-lg"></div>
+                <div className="relative h-32 rounded-lg overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=600&h=300&fit=crop&q=80"
+                    alt="Track Your Progress"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
                 <div>
                   <h3 className="font-semibold text-foreground mb-2">Track Your Progress</h3>
                   <p className="text-sm text-muted-foreground mb-4">
@@ -161,7 +186,15 @@ export default function Home() {
             {/* Card 4 - Resources */}
             <div className="card border-border hover:shadow-lg transition-all duration-200">
               <div className="space-y-4">
-                <div className="h-32 bg-gray-100 dark:bg-gray-900 rounded-lg"></div>
+                <div className="relative h-32 rounded-lg overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&h=300&fit=crop&q=80"
+                    alt="Expert Resources"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
                 <div>
                   <h3 className="font-semibold text-foreground mb-2">Expert Resources</h3>
                   <p className="text-sm text-muted-foreground mb-4">

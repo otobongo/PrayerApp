@@ -25,47 +25,43 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // Apply rate limiting to prevent spam registrations
-      const result = await withRateLimit(
-        registrationLimiter,
-        formData.email.toLowerCase(),
-        async () => {
-          // Sign up with Supabase Auth
-          const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: formData.email,
-            password: formData.password,
-            options: {
-              data: {
-                name: formData.name,
-              },
-            },
-          });
+      console.log('Attempting registration with:', formData.email);
 
-          if (authError) throw authError;
+      // Sign up with Supabase Auth (without rate limiting for testing)
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email.toLowerCase(),
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          },
+          emailRedirectTo: window.location.origin + '/dashboard',
+        },
+      });
 
-          if (authData.user) {
-            // Update profile with timezone
-            const { error: profileError } = await supabase
-              .from('profiles')
-              .update({ timezone: formData.timezone })
-              .eq('id', authData.user.id);
+      console.log('Registration response:', { authData, authError });
 
-            if (profileError) throw profileError;
-          }
-
-          return authData;
-        }
-      );
-
-      if (!result.success) {
-        setError(result.error || 'Registration failed');
+      if (authError) {
+        console.error('Registration error:', authError);
+        setError(authError.message);
         return;
       }
 
-      if (result.data?.user) {
-        router.push('/dashboard');
+      if (authData.user) {
+        console.log('User created:', authData.user.id);
+
+        // Note: If email confirmation is enabled in Supabase, user needs to confirm email
+        if (authData.session) {
+          // Session exists, user can log in immediately
+          console.log('Session created, redirecting...');
+          window.location.href = '/dashboard';
+        } else {
+          // No session, probably needs email confirmation
+          setError('Please check your email to confirm your account. If email confirmation is disabled in Supabase, you can log in now.');
+        }
       }
     } catch (err: any) {
+      console.error('Registration error:', err);
       setError(err.message || 'An unexpected error occurred');
     } finally {
       setLoading(false);

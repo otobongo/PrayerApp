@@ -1,0 +1,256 @@
+/* ==========================================================================
+   CSS Variables Template - Frontend Design Pro
+   ========================================================================== */
+
+:root {
+  /* ==========================================================================
+     COLOR SYSTEM
+     ========================================================================== */
+  
+  /* Primary */
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-primary-active: #1E40AF;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #DBEAFE;
+  --color-on-primary-container: #1E3A8A;
+  
+  /* Secondary */
+  --color-secondary: #64748B;
+  --color-secondary-hover: #475569;
+  --color-secondary-active: #334155;
+  --color-on-secondary: #FFFFFF;
+  --color-secondary-container: #F1F5F9;
+  --color-on-secondary-container: #1E293B;
+  
+  /* Tertiary (Accent) */
+  --color-tertiary: #8B5CF6;
+  --color-tertiary-hover: #7C3AED;
+  --color-on-tertiary: #FFFFFF;
+  
+  /* Surface */
+  --color-surface: #FFFFFF;
+  --color-surface-dim: #F8FAFC;
+  --color-surface-bright: #FFFFFF;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-low: #F8FAFC;
+  --color-surface-container: #F1F5F9;
+  --color-surface-container-high: #E2E8F0;
+  --color-surface-container-highest: #CBD5E1;
+  --color-on-surface: #0F172A;
+  --color-on-surface-variant: #64748B;
+  
+  /* Background */
+  --color-background: #F8FAFC;
+  --color-on-background: #0F172A;
+  
+  /* Feedback */
+  --color-error: #DC2626;
+  --color-on-error: #FFFFFF;
+  --color-error-container: #FEE2E2;
+  --color-on-error-container: #991B1B;
+  
+  --color-success: #16A34A;
+  --color-on-success: #FFFFFF;
+  --color-success-container: #DCFCE7;
+  --color-on-success-container: #166534;
+  
+  --color-warning: #D97706;
+  --color-on-warning: #FFFFFF;
+  --color-warning-container: #FEF3C7;
+  --color-on-warning-container: #92400E;
+  
+  --color-info: #0284C7;
+  --color-on-info: #FFFFFF;
+  --color-info-container: #E0F2FE;
+  --color-on-info-container: #075985;
+  
+  /* Outline */
+  --color-outline: #CBD5E1;
+  --color-outline-variant: #E2E8F0;
+  
+  /* Scrim/Overlay */
+  --color-scrim: rgba(0, 0, 0, 0.5);
+  
+  /* ==========================================================================
+     TYPOGRAPHY
+     ========================================================================== */
+  
+  /* Font Families */
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* Font Sizes (1.25 ratio scale) */
+  --text-xs: 0.625rem;    /* 10px */
+  --text-sm: 0.813rem;    /* 13px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.25rem;     /* 20px */
+  --text-xl: 1.563rem;    /* 25px */
+  --text-2xl: 1.953rem;   /* 31px */
+  --text-3xl: 2.441rem;   /* 39px */
+  --text-4xl: 3.052rem;   /* 49px */
+  --text-5xl: 3.815rem;   /* 61px */
+  
+  /* Font Weights */
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+  
+  /* Letter Spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+  
+  /* ==========================================================================
+     SPACING (8px Grid)
+     ========================================================================== */
+  
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0-5: 0.125rem;  /* 2px */
+  --space-1: 0.25rem;     /* 4px */
+  --space-2: 0.5rem;      /* 8px */
+  --space-3: 0.75rem;     /* 12px */
+  --space-4: 1rem;        /* 16px */
+  --space-5: 1.25rem;     /* 20px */
+  --space-6: 1.5rem;      /* 24px */
+  --space-8: 2rem;        /* 32px */
+  --space-10: 2.5rem;     /* 40px */
+  --space-12: 3rem;       /* 48px */
+  --space-16: 4rem;       /* 64px */
+  --space-20: 5rem;       /* 80px */
+  --space-24: 6rem;       /* 96px */
+  --space-32: 8rem;       /* 128px */
+  
+  /* ==========================================================================
+     ELEVATION / SHADOWS
+     ========================================================================== */
+  
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+  
+  /* Material Design Elevation (dp) */
+  --elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --elevation-2: 0 3px 6px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.12);
+  --elevation-3: 0 6px 10px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.1);
+  --elevation-4: 0 10px 20px rgba(0,0,0,0.15), 0 6px 6px rgba(0,0,0,0.1);
+  --elevation-5: 0 15px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.1);
+  
+  /* ==========================================================================
+     BORDER RADIUS
+     ========================================================================== */
+  
+  --radius-none: 0;
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-2xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;  /* Pill shape */
+  
+  /* ==========================================================================
+     MOTION / ANIMATION
+     ========================================================================== */
+  
+  /* Durations */
+  --duration-75: 75ms;
+  --duration-100: 100ms;
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  --duration-700: 700ms;
+  --duration-1000: 1000ms;
+  
+  /* Easing */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* ==========================================================================
+     LAYOUT
+     ========================================================================== */
+  
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  
+  /* Touch Targets */
+  --touch-target-min: 44px;
+  
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-modal-backdrop: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+}
+
+/* ==========================================================================
+   DARK THEME
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #60A5FA;
+    --color-primary-hover: #3B82F6;
+    --color-on-primary: #1E3A8A;
+    
+    --color-surface: #1E293B;
+    --color-surface-dim: #0F172A;
+    --color-surface-container: #334155;
+    --color-surface-container-high: #475569;
+    --color-on-surface: #F1F5F9;
+    --color-on-surface-variant: #94A3B8;
+    
+    --color-background: #0F172A;
+    --color-on-background: #F1F5F9;
+    
+    --color-outline: #475569;
+    --color-outline-variant: #334155;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-75: 0.01ms;
+    --duration-100: 0.01ms;
+    --duration-150: 0.01ms;
+    --duration-200: 0.01ms;
+    --duration-300: 0.01ms;
+    --duration-500: 0.01ms;
+    --duration-700: 0.01ms;
+    --duration-1000: 0.01ms;
+  }
+}

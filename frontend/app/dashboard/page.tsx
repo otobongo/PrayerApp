@@ -3,247 +3,326 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase';
-import { getCurrentUser, getUserProfile, signOut } from '@/lib/auth';
-
-interface Goal {
-  id: string;
-  title: string;
-  description: string;
-  total_days: number;
-  tags: string[];
-}
-
-interface Enrollment {
-  id: string;
-  current_day_index: number;
-  streak_count: number;
-  status: string;
-  goal_id: string;
-  group_id: string | null;
-  goals: Goal;
-  groups?: {
-    id: string;
-    name: string;
-  } | null;
-}
+import {
+  Button,
+  Container,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  H1,
+  H2,
+  Text,
+  Badge,
+  Avatar,
+} from '@/design-system';
+import { LogOut, Settings, Bell, User, Heart, Users, Zap, BookOpen } from 'lucide-react';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const currentUser = await getCurrentUser();
-        if (!currentUser) {
-          router.push('/auth/login');
-          return;
-        }
-
-        setUser(currentUser);
-
-        // Fetch user profile
-        const userProfile = await getUserProfile(currentUser.id);
-        setProfile(userProfile);
-
-        // Fetch enrollments with goals and groups
-        const { data: enrollmentsData, error } = await supabase
-          .from('enrollments')
-          .select(`
-            id,
-            current_day_index,
-            streak_count,
-            status,
-            goal_id,
-            group_id,
-            goals!inner (
-              id,
-              title,
-              description,
-              total_days,
-              tags
-            ),
-            groups (
-              id,
-              name
-            )
-          `)
-          .eq('user_id', currentUser.id)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        // Type assertion since Supabase returns the correct structure
-        setEnrollments((enrollmentsData as any) || []);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-        router.push('/auth/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     checkAuth();
-  }, [router]);
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        console.error('No session found:', sessionError);
+        router.push('/auth/login');
+        return;
+      }
+
+      setUser(session.user);
+      console.log('User authenticated:', session.user);
+
+      // Try to fetch profile
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (!profileError && profileData) {
+          setProfile(profileData);
+        }
+      } catch (err) {
+        console.log('Profile table not set up yet, using basic user info');
+      }
+    } catch (err: any) {
+      console.error('Auth check error:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
-    await signOut();
-    router.push('/');
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      alert('Logout error: ' + error.message);
+    } else {
+      router.push('/');
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <Text variant="body">Loading dashboard...</Text>
+        </div>
       </div>
     );
   }
 
-  const activeEnrollments = enrollments.filter((e) => e.status === 'active');
-  const completedEnrollments = enrollments.filter((e) => e.status === 'completed');
+  if (error || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Text variant="h3" color="error">Authentication Error</Text>
+          <Text color="muted">{error || 'Not authenticated'}</Text>
+          <Button onClick={() => router.push('/auth/login')}>Go to Login</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const userName = profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'User';
+  const userEmail = user?.email || 'No email';
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Welcome back, {profile?.name || user?.email}!</h1>
-            {activeEnrollments.length > 0 && (
-              <p className="text-lg text-muted-foreground">
-                Keep up your streak! You&apos;re doing great.
-              </p>
-            )}
-          </div>
-          <div className="flex gap-4">
-            <Button variant="outline" asChild>
-              <Link href="/author/dashboard">Author Dashboard</Link>
-            </Button>
-            <Button variant="outline" onClick={handleLogout}>
-              Logout
-            </Button>
-          </div>
-        </div>
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-black">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
+        <Container size="7xl" padding="lg">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold">
+                P
+              </div>
+              <span className="text-xl font-semibold">PrayerApp</span>
+            </div>
 
-        {/* Active Goals */}
+            <div className="flex items-center gap-4">
+              <Button size="icon" variant="ghost">
+                <Bell className="h-5 w-5" />
+              </Button>
+              <Button size="icon" variant="ghost">
+                <Settings className="h-5 w-5" />
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </Container>
+      </header>
+
+      <Container size="7xl" padding="lg" className="py-12">
+        {/* Welcome Section */}
         <div className="mb-12">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Active Goals ({activeEnrollments.length})</h2>
-            <Button asChild>
-              <Link href="/goals">Browse Goals</Link>
-            </Button>
-          </div>
-
-          {activeEnrollments.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-xl text-muted-foreground mb-4">
-                  You haven&apos;t started any goals yet.
-                </p>
-                <Button asChild>
-                  <Link href="/goals">Explore Available Goals</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activeEnrollments.map((enrollment) => {
-                const progress = (enrollment.current_day_index / enrollment.goals.total_days) * 100;
-
-                return (
-                  <Card key={enrollment.id}>
-                    <CardHeader>
-                      <CardTitle>{enrollment.goals.title}</CardTitle>
-                      <CardDescription>
-                        Day {enrollment.current_day_index} of {enrollment.goals.total_days}
-                      </CardDescription>
-                      {enrollment.groups && (
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
-                            👥 {enrollment.groups.name}
-                          </span>
-                        </div>
-                      )}
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span>Progress</span>
-                          <span className="font-medium">{Math.round(progress)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-primary h-2 rounded-full transition-all"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {enrollment.streak_count > 0 && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <span>🔥</span>
-                          <span className="font-medium">{enrollment.streak_count} day streak</span>
-                        </div>
-                      )}
-                    </CardContent>
-
-                    <CardFooter className="flex gap-2">
-                      <Button asChild className="flex-1">
-                        <Link href={`/goals/${enrollment.goals.id}/play/${enrollment.id}`}>
-                          Continue
-                        </Link>
-                      </Button>
-                      {enrollment.groups && (
-                        <Button asChild variant="outline" className="flex-1">
-                          <Link href={`/groups/${enrollment.group_id}`}>
-                            Group
-                          </Link>
-                        </Button>
-                      )}
-                    </CardFooter>
-                  </Card>
-                );
-              })}
+          <div className="flex items-start justify-between">
+            <div className="space-y-2">
+              <H1>Welcome back, {userName}!</H1>
+              <Text color="muted" variant="body-lg">
+                Your spiritual journey continues here. Start a new goal or continue your progress.
+              </Text>
             </div>
-          )}
+            <Avatar fallback={userName} size="lg" />
+          </div>
         </div>
 
-        {/* Completed Goals */}
-        {completedEnrollments.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">
-              Completed Goals ({completedEnrollments.length})
-            </h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {completedEnrollments.map((enrollment) => (
-                <Card key={enrollment.id} className="opacity-80">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      {enrollment.goals.title}
-                      <span className="text-xl">✅</span>
-                    </CardTitle>
-                    <CardDescription>
-                      Completed {enrollment.goals.total_days} days
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {enrollment.goals.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+        {/* Quick Stats */}
+        <div className="grid md:grid-cols-4 gap-4 mb-12">
+          <Card variant="outlined">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-1">0</div>
+                <Text variant="caption" color="muted">Active Goals</Text>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="outlined">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-600 mb-1">0</div>
+                <Text variant="caption" color="muted">Current Streak</Text>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="outlined">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600 mb-1">0</div>
+                <Text variant="caption" color="muted">Group Members</Text>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="outlined">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-600 mb-1">0</div>
+                <Text variant="caption" color="muted">Completed</Text>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Actions */}
+        <div className="mb-12">
+          <H2 className="mb-6">Get Started</H2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Browse Goals */}
+            <Card variant="elevated" interactive>
+              <Link href="/goals" className="block">
+                <CardHeader>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                      <Heart className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+                    </div>
+                    <CardTitle>Browse Goals</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Explore our collection of guided prayer goals
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Text variant="body-sm" color="muted">
+                    Choose from spiritual growth, daily prayers, meditation, and more.
+                  </Text>
+                </CardContent>
+              </Link>
+            </Card>
+
+            {/* Join Groups */}
+            <Card variant="elevated" interactive>
+              <Link href="/groups" className="block">
+                <CardHeader>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                      <Users className="h-5 w-5 text-green-600 dark:text-green-300" />
+                    </div>
+                    <CardTitle>Join Groups</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Connect with others on their spiritual journey
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Text variant="body-sm" color="muted">
+                    Find or create prayer groups to grow together.
+                  </Text>
+                </CardContent>
+              </Link>
+            </Card>
+
+            {/* My Profile */}
+            <Card variant="elevated" interactive>
+              <Link href="/profile" className="block">
+                <CardHeader>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                      <User className="h-5 w-5 text-purple-600 dark:text-purple-300" />
+                    </div>
+                    <CardTitle>My Profile</CardTitle>
+                  </div>
+                  <CardDescription>
+                    View and edit your spiritual profile
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Text variant="body-sm" color="muted">
+                    Manage your information and preferences.
+                  </Text>
+                </CardContent>
+              </Link>
+            </Card>
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+
+        {/* Resources Section */}
+        <div className="mb-12">
+          <H2 className="mb-6">Resources</H2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card variant="outlined">
+              <CardHeader>
+                <div className="flex items-center gap-2 mb-2">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  <CardTitle>Design System</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Text variant="body-sm" color="muted" className="mb-4">
+                  Explore our design system and UI components.
+                </Text>
+              </CardContent>
+              <CardFooter>
+                <Link href="/design-system">
+                  <Button size="sm" variant="outline">View System</Button>
+                </Link>
+              </CardFooter>
+            </Card>
+
+            <Card variant="outlined">
+              <CardHeader>
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="h-5 w-5 text-primary" />
+                  <CardTitle>Auth Debug</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Text variant="body-sm" color="muted" className="mb-4">
+                  Check authentication status and debug issues.
+                </Text>
+              </CardContent>
+              <CardFooter>
+                <Link href="/auth-test">
+                  <Button size="sm" variant="outline">Debug Auth</Button>
+                </Link>
+              </CardFooter>
+            </Card>
+          </div>
+        </div>
+
+        {/* User Info Section */}
+        <Card variant="ghost">
+          <CardHeader>
+            <CardTitle>Your Account</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                <Text variant="label">Email:</Text>
+                <Text variant="body-sm" className="font-mono">{userEmail}</Text>
+              </div>
+              <div className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                <Text variant="label">Status:</Text>
+                <Badge variant="success">Active</Badge>
+              </div>
+              <div className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                <Text variant="label">User ID:</Text>
+                <Text variant="body-sm" className="font-mono text-xs">{user?.id?.slice(0, 8)}...</Text>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Container>
+    </main>
   );
 }
